@@ -16,6 +16,9 @@ connection = sqlite3.connect(ROOT_PATH/"my-database.db")
 # Cursor: objeto que permite executar comandos SQL
 cursor = connection.cursor()
 
+# Define o modo de retorno dos registros
+cursor.row_factory = sqlite3.Row
+
 # Função para criar a tabela clientes
 
 
@@ -67,7 +70,7 @@ def delete(connection, cursor, id):
 def insert_many(connection, cursor, many_data):
     cursor.executemany('''
         INSERT INTO clients(name, email) VALUES(?, ?)
-    ''', many_data)
+        ''', many_data)
     connection.commit()
 
 
@@ -84,3 +87,25 @@ def insert_many(connection, cursor, many_data):
 #     ("Patricia", "patricia.santos@icloud.com")
 # ]
 # insert_many(connection, cursor, many_data)
+
+def recuperar_cliente(cursor, id):
+    cursor.execute('''
+        SELECT id, name, email FROM clients WHERE id=?
+        ''', (id,))
+    return cursor.fetchone()
+
+# Função para listar todos os registros da tabela clientes
+
+
+def listar_clientes(cursor):
+    return cursor.execute("SELECT * FROM clients ORDER BY name DESC;")
+
+
+clientes = listar_clientes(cursor)
+
+for cliente in clientes:
+    print(dict(cliente))
+
+
+# print(cliente["id"], cliente["name"], cliente["email"])
+# print(f'Seja bem vindo ao sistema {cliente["name"]}')
